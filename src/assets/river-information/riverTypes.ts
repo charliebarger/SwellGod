@@ -1,9 +1,15 @@
 import { Fly } from "./bugTypes"
 
+interface Coordinates {
+  latitude: number
+  longitude: number
+}
+
 interface River {
   riverName: string
-  location: string
-  weather: string
+  cityName: string
+  riverSiteCode: string
+  coordinates: Coordinates
 }
 
 interface RiverInfo {
@@ -11,4 +17,4 @@ interface RiverInfo {
   flies: Fly[]
 }
 
-export { River, RiverInfo }
+export { River, RiverInfo, Coordinates }
