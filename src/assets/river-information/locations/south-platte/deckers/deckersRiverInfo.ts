@@ -3,12 +3,12 @@ import deckersFlies from "./deckersFlies"
 
 const deckers: RiverInfo = {
   river: {
-    riverName: "South Platte River",
-    cityName: "Deckers, CO",
-    riverSiteCode: "06701900",
+    riverName: "Roaring Fork River",
+    cityName: "Glenwood Springs, CO",
+    riverSiteCode: "09085000",
     coordinates: {
-      latitude: 39.253786,
-      longitude: -105.22984,
+      latitude: 39.470867,
+      longitude: -107.280881,
     },
   },
   flies: deckersFlies,
