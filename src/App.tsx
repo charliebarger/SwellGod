@@ -1,10 +1,27 @@
-import React from "react"
+import React, { useRef, useEffect, useState } from "react"
 import "./App.css"
 import deckers from "./assets/river-information/locations/south-platte/deckers/deckersRiverInfo"
 import { riverAPIcall } from "./helpers/apiCalls"
 import Logo from "../src/assets/images/logo-sm-1.png"
 import ForkPhoto from "../src/assets/images/Hole17.jpg"
 import Headshot from "../src/assets/images/headshot.jpg"
+import * as d3 from "d3"
+import dummyData from "./assets/aapl.json"
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartOptions,
+} from "chart.js"
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+import { Line } from "react-chartjs-2"
+
 function App() {
   return (
     <div className="App">
@@ -95,7 +112,7 @@ function App() {
                 alt="headshot"
               />
               <div className="flex flex-col">
-                <span className=" text-left font-bold">Capt. Caleb Mcdaniel</span>
+                <span className=" text-left font-bold">Capt. Caleb McDaniel</span>
                 <span className=" text-left font-medium text-sm text-gray-600">
                   Iron Bridge Fishing Manager
                 </span>
@@ -124,11 +141,85 @@ function App() {
                 </li>
               </ul>
             </div>
+            <Chart />
           </div>
         </section>
       </main>
     </div>
   )
+}
+
+export function Chart() {
+  const [data, getData] = useState()
+  console.log(data)
+  useEffect(() => {
+    riverAPIcall("09085000").then((res) => getData(res))
+  }, [])
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Chart.js Line Chart",
+      },
+      scales: {
+        xAxes: [
+          {
+            ticks: {
+              callback: (tick: string) => (Number(tick) % 10 === 0 ? tick : null),
+            },
+          },
+        ],
+      },
+    },
+  }
+
+  const labels = ["0", "5", "10", "15", "16", "20", "25"]
+
+  const hoptions: ChartOptions<"line"> = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: true,
+        text: "Chart with Tick Configuration",
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          // For a category axis, the val is the index so the lookup via getLabelForValue is needed
+          callback: function (value: any): any {
+            const tick = Number(this.getLabelForValue(value))
+            return tick % 2 === 0 ? tick : null
+          },
+          color: "red",
+        },
+      },
+    },
+  }
+
+  const yo = {
+    labels,
+    datasets: [
+      {
+        label: "River Flow",
+        data: labels.map(() => Math.floor(Math.random() * 100)),
+        borderColor: "rgb(255, 99, 132)",
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+      {
+        label: "Dataset 2",
+        data: labels.map(() => Math.floor(Math.random() * 100)),
+        borderColor: "rgb(53, 162, 235)",
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
+      },
+    ],
+  }
+  return <Line options={hoptions} data={yo} />
 }
 
 export default App
