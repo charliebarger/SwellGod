@@ -7,6 +7,8 @@ import ForkPhoto from "../src/assets/images/Hole17.jpg"
 import Headshot from "../src/assets/images/headshot.jpg"
 import * as d3 from "d3"
 import dummyData from "./assets/aapl.json"
+import format from "date-fns/format"
+import parseISO from "date-fns/esm/fp/parseISO/index.js"
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,10 +19,22 @@ import {
   Tooltip,
   Legend,
   ChartOptions,
+  ChartData,
+  Filler,
 } from "chart.js"
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+)
 import { Line } from "react-chartjs-2"
+import { index, lab } from "d3"
 
 function App() {
   return (
@@ -149,77 +163,149 @@ function App() {
   )
 }
 
-export function Chart() {
-  const [data, getData] = useState()
-  console.log(data)
-  useEffect(() => {
-    riverAPIcall("09085000").then((res) => getData(res))
-  }, [])
+interface RiverAxis {
+  dateTime: string
+  value: number
+}
 
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Chart.js Line Chart",
-      },
-      scales: {
-        xAxes: [
-          {
-            ticks: {
-              callback: (tick: string) => (Number(tick) % 10 === 0 ? tick : null),
+export function Chart() {
+  const [chartData, setChartData] = useState<{
+    options: ChartOptions<"line">
+    data: ChartData<"line">
+  } | null>()
+  console.log(format(parseISO("2022-09-29T15:45:00.000-06:00"), "HH.mm a"))
+
+  useEffect(() => {
+    const colors = ["red", "blue", "yellow", "green"]
+    const fetchRiverData = async () => {
+      const riverData = await riverAPIcall("09085000")
+      console.log(riverData)
+      setChartData({
+        options: {
+          responsive: true,
+          aspectRatio: 16 / 9,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: "Historic River Flow",
+              font: {
+                size: 16,
+              },
+              padding: {
+                top: 10,
+                bottom: 20,
+              },
+            },
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  console.log(context.label)
+                  let label = context.dataset.label || ""
+                  if (label) {
+                    label += ": "
+                  }
+                  if (context.parsed.y !== null) {
+                    label += context.parsed.y + " " + "cfs"
+                  }
+                  return label
+                },
+                title: function (context) {
+                  return format(parseISO(context[0].label), "LLL d, yyyy, h:m a")
+                },
+              },
             },
           },
-        ],
-      },
-    },
-  }
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Date",
+                font: {
+                  size: 14,
+                  weight: "500",
+                },
+              },
+              ticks: {
+                maxRotation: 0,
+                major: {
+                  enabled: true,
+                },
+                color: (c): any => {
+                  if (c.tick.major) {
+                    return "hsl(196deg 46% 48%)"
+                  }
+                },
+                font: (c): any => {
+                  if (c.tick.major) {
+                    return { size: 12, weight: "bold" }
+                  } else {
+                    return { size: 12 }
+                  }
+                },
+                // For a category axis, the val is the index so the lookup via getLabelForValue is needed
+                callback: function (value: any, index, values): any {
+                  const tick = this.getLabelForValue(value)
+                  const time = format(parseISO(tick), "HH.mm")
+                  if (time === "08.00" || time === "16.00" || time === "00.00") {
+                    if (time === "00.00") {
+                      values[index].major = true
 
-  const labels = ["0", "5", "10", "15", "16", "20", "25"]
-
-  const hoptions: ChartOptions<"line"> = {
-    responsive: true,
-    plugins: {
-      title: {
-        display: true,
-        text: "Chart with Tick Configuration",
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          // For a category axis, the val is the index so the lookup via getLabelForValue is needed
-          callback: function (value: any): any {
-            const tick = Number(this.getLabelForValue(value))
-            return tick % 2 === 0 ? tick : null
+                      return format(parseISO(tick), "LLL d")
+                    } else {
+                      return format(parseISO(tick), "ha")
+                    }
+                  }
+                },
+              },
+            },
+            y: {
+              ticks: {
+                font: {
+                  size: 12,
+                },
+                color: "black",
+              },
+              title: {
+                display: true,
+                text: "Discharge Rate (CFS)",
+                font: {
+                  size: 14,
+                  weight: "500",
+                },
+              },
+            },
           },
-          color: "red",
         },
-      },
-    },
-  }
+        data: {
+          labels: riverData.map((item) => item.dateTime),
+          datasets: [
+            {
+              label: "Discharge Rate",
+              data: riverData.map((item) => item.value),
+              borderColor: "hsl(196deg 46% 48%)",
+              fill: true,
+              backgroundColor: "hsl(196deg 46% 48% / 30%)",
+              pointRadius: 0,
+            },
+          ],
+        },
+      })
+    }
+    fetchRiverData()
+  }, [])
 
-  const yo = {
-    labels,
-    datasets: [
-      {
-        label: "River Flow",
-        data: labels.map(() => Math.floor(Math.random() * 100)),
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
-      },
-      {
-        label: "Dataset 2",
-        data: labels.map(() => Math.floor(Math.random() * 100)),
-        borderColor: "rgb(53, 162, 235)",
-        backgroundColor: "rgba(53, 162, 235, 0.5)",
-      },
-    ],
-  }
-  return <Line options={hoptions} data={yo} />
+  return chartData ? (
+    <div>
+      <Line options={chartData.options} data={chartData.data} />
+    </div>
+  ) : (
+    <></>
+  )
 }
 
 export default App
