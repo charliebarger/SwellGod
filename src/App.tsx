@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react"
 import "./App.css"
 import { riverAPIcall } from "./helpers/apiCalls"
-import RiverReport from "./pages/RiverReport"
+import Report from "./pages/Report"
 import format from "date-fns/format"
 import Header from "./compositions/Header"
 import parseISO from "date-fns/esm/fp/parseISO/index.js"
@@ -37,7 +37,7 @@ function App() {
     <div className="App">
       <Header />
       <main className="max-w-screen-md m-auto px-5 lg:max-w-none xl:max-w-7xl">
-        <RiverReport />
+        <Report />
       </main>
     </div>
   )
