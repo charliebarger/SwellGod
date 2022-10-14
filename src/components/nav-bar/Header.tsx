@@ -1,7 +1,6 @@
 import React from "react"
-import Logo from "../../src/assets/images/logo-sm-1.png"
-import { NavItem } from "../components/nativagation/NavItem"
-import List from "../components/List"
+import List from "components/ListGenerator"
+import Logo from "assets/images/logo-sm-1.png"
 
 const headerItems = ["About", "Fishing Report", "Contact"]
 
@@ -15,7 +14,14 @@ const Header = () => {
         <List
           wrapperClasses="flex items-center justify-between space-x-20"
           list={headerItems}
-          render={(item) => <NavItem>{item}</NavItem>}
+          render={(item) => (
+            <a
+              href="#"
+              className="m-0 whitespace-nowrap px-5 py-2 rounded-full hover:bg-primaryColor hover:text-white"
+            >
+              {item}
+            </a>
+          )}
         />
       </nav>
     </header>

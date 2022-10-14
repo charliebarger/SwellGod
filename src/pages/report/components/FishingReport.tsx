@@ -1,11 +1,14 @@
 import React from "react"
-import Headshot from "../../src/assets/images/headshot.jpg"
-import ProfilePic from "../components/profile/ProfilePic"
-import ProfileInfo from "../components/profile/ProfileInfo"
+import PageSubHeader from "components/headers/PageSubHeader"
 import FlyRecommendations from "./FlyRecommendations"
-const GuideReport = () => {
+import ProfileInfo from "components/profile/ProfileInfo"
+import ProfilePic from "components/profile/ProfilePic"
+import Headshot from "assets/images/headshot.jpg"
+
+const FishingReport = () => {
   return (
-    <>
+    <section>
+      <PageSubHeader>Fishing Report</PageSubHeader>
       <div className="flex gap-5">
         <ProfilePic headshot={Headshot} />
         <ProfileInfo name="Capt. Caleb McDaniel" title="Iron Bridge Fishing Manager" />
@@ -17,8 +20,8 @@ const GuideReport = () => {
         similique rem repellat unde amet illo. Aliquam, quidem!
       </p>
       <FlyRecommendations />
-    </>
+    </section>
   )
 }
 
-export default GuideReport
+export default FishingReport

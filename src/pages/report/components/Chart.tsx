@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react"
 import format from "date-fns/format"
-import { riverAPIcall } from "../helpers/apiCalls"
 import parseISO from "date-fns/esm/fp/parseISO/index.js"
+import { riverAPIcall } from "api/riverData"
+import { Line } from "react-chartjs-2"
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,7 +27,6 @@ ChartJS.register(
   Legend,
   Filler,
 )
-import { Line } from "react-chartjs-2"
 
 export function Chart() {
   const [chartData, setChartData] = useState<{
@@ -93,12 +93,12 @@ export function Chart() {
                 major: {
                   enabled: true,
                 },
-                color: (c): any => {
+                color: (c) => {
                   if (c.tick.major) {
                     return "hsl(196deg 46% 48%)"
                   }
                 },
-                font: (c): any => {
+                font: (c) => {
                   if (c.tick.major) {
                     return { size: 12, weight: "bold" }
                   } else {
@@ -106,8 +106,8 @@ export function Chart() {
                   }
                 },
                 // For a category axis, the val is the index so the lookup via getLabelForValue is needed
-                callback: function (value: any, index, values): any {
-                  const tick = this.getLabelForValue(value)
+                callback: function (value, index, values) {
+                  const tick = this.getLabelForValue(Number(value))
                   const time = format(parseISO(tick), "HH.mm")
                   if (time === "08.00" || time === "16.00" || time === "00.00") {
                     if (time === "00.00") {
@@ -159,7 +159,7 @@ export function Chart() {
 
   // need to add loader for loading state
   return chartData ? (
-    <div className=" max-w-5xl m-auto">
+    <div className=" max-w-5xl m-auto py-10">
       <Line options={chartData.options} data={chartData.data} />
     </div>
   ) : (

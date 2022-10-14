@@ -1,5 +1,6 @@
 import React from "react"
-import List from "../components/List"
+import List from "components/ListGenerator"
+
 interface FlyInfo {
   fly: string
   size: [number, number] | [number]

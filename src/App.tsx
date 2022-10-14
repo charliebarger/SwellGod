@@ -1,9 +1,9 @@
 import React, { useRef, useEffect, useState } from "react"
 import "./App.css"
-import { riverAPIcall } from "./helpers/apiCalls"
-import Report from "./pages/Report"
+import { riverAPIcall } from "api/riverData"
+import Report from "./pages/report/Report"
 import format from "date-fns/format"
-import Header from "./compositions/Header"
+import Header from "./components/nav-bar/Header"
 import parseISO from "date-fns/esm/fp/parseISO/index.js"
 import {
   Chart as ChartJS,
@@ -14,8 +14,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  ChartOptions,
-  ChartData,
   Filler,
 } from "chart.js"
 
@@ -29,8 +27,6 @@ ChartJS.register(
   Legend,
   Filler,
 )
-import { Line } from "react-chartjs-2"
-import { index, lab } from "d3"
 
 function App() {
   return (
