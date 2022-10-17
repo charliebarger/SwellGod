@@ -32,7 +32,7 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <main className="max-w-screen-md m-auto px-5 lg:max-w-none xl:max-w-7xl">
+      <main>
         <Report />
       </main>
     </div>

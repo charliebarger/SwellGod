@@ -7,7 +7,7 @@ import Headshot from "assets/images/headshot.jpg"
 
 const FishingReport = () => {
   return (
-    <section>
+    <section className="px-5 max-w-screen-md m-auto lg:max-w-none xl:max-w-7xl">
       <PageSubHeader>Fishing Report</PageSubHeader>
       <div className="flex gap-5">
         <ProfilePic headshot={Headshot} />

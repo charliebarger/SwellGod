@@ -17,7 +17,7 @@ const liveRiverData: boxData[] = [
 
 const RiverReport = () => {
   return (
-    <section>
+    <section className="px-5 max-w-screen-md m-auto lg:max-w-none xl:max-w-7xl">
       <div className="   lg:grid lg:grid-cols-2 lg:gap-7">
         <div>
           <img src={ForkPhoto} className="m-auto"></img>

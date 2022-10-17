@@ -28,6 +28,9 @@ ChartJS.register(
   Filler,
 )
 
+const up = (ctx: any, value: any) => (ctx.p0.parsed.y > 640 ? value : undefined)
+const down = (ctx: any, value: any) => (ctx.p0.parsed.y < 640 ? value : undefined)
+
 export function Chart() {
   const [chartData, setChartData] = useState<{
     options: ChartOptions<"line">
@@ -148,7 +151,11 @@ export function Chart() {
               borderColor: "hsl(196deg 46% 48%)",
               fill: true,
               backgroundColor: "hsl(196deg 46% 48% / 30%)",
+              tension: 0.4,
               pointRadius: 0,
+              segment: {
+                backgroundColor: (ctx) => up(ctx, "green") || down(ctx, "red"),
+              },
             },
           ],
         },
