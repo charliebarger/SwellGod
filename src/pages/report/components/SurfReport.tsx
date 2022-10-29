@@ -1,14 +1,12 @@
 import React from "react"
-import PageSubHeader from "components/headers/PageSubHeader"
-import FlyRecommendations from "./FlyRecommendations"
 import ProfileInfo from "components/profile/ProfileInfo"
 import ProfilePic from "components/profile/ProfilePic"
 import Headshot from "assets/images/headshot.jpg"
 
-const FishingReport = () => {
+const SurfReport = () => {
   return (
-    <section className="px-5 max-w-screen-md m-auto lg:max-w-none xl:max-w-7xl">
-      <PageSubHeader>Fishing Report</PageSubHeader>
+    <section className="px-5 pt-10 max-w-screen-md m-auto lg:max-w-none xl:max-w-7xl">
+      {/* <PageSubHeader>Fishing Report</PageSubHeader> */}
       <div className="flex gap-5">
         <ProfilePic headshot={Headshot} />
         <ProfileInfo name="Capt. Caleb McDaniel" title="Iron Bridge Fishing Manager" />
@@ -19,9 +17,8 @@ const FishingReport = () => {
         accusamus similique alias dolores possimus dolorum. Libero totam magnam praesentium
         similique rem repellat unde amet illo. Aliquam, quidem!
       </p>
-      <FlyRecommendations />
     </section>
   )
 }
 
-export default FishingReport
+export default SurfReport

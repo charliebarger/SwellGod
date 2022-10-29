@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react"
-import format from "date-fns/format"
-import parseISO from "date-fns/esm/fp/parseISO/index.js"
-import { riverAPIcall } from "api/riverData"
 import { Line } from "react-chartjs-2"
+import { SectionWrapper } from "components/SectionWrapper"
+import Annotation from "chartjs-plugin-annotation"
+import { ColorRing } from "react-loader-spinner"
+import useChart from "./useChart"
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,8 +12,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  ChartOptions,
-  ChartData,
   Filler,
 } from "chart.js"
 
@@ -26,151 +24,68 @@ ChartJS.register(
   Tooltip,
   Legend,
   Filler,
+  Annotation,
 )
 
-const up = (ctx: any, value: any) => (ctx.p0.parsed.y > 640 ? value : undefined)
-const down = (ctx: any, value: any) => (ctx.p0.parsed.y < 640 ? value : undefined)
+const LineChart = () => {
+  const chartData = useChart()
+  if (chartData.res !== false) {
+    return (
+      <>
+        <Line options={chartData.res.options} data={chartData.res.data} />
+        <div className="flex flex-wrap gap-4 ml-14">
+          <figure className="flex items-center gap-2 ">
+            <div className=" bg-chartGood h-4 w-8 border-2 border-chartGoodBorder " />
+            <figcaption className=" font-medium text-sm">Good</figcaption>
+          </figure>
+          <figure className="flex items-center gap-2">
+            <div className=" bg-chartFair h-4 w-8 border-2 border-chartFairBorder " />
+            <figcaption className=" font-medium text-sm">Fair</figcaption>
+          </figure>
+          <figure className="flex items-center gap-2">
+            <div className=" bg-chartBad h-4 w-8 border-2 border-chartBadBorder " />
+            <figcaption className=" font-medium text-sm">Not Surfable</figcaption>
+          </figure>
+        </div>
+      </>
+    )
+  } else if (chartData.error) {
+    return (
+      <div>
+        <p className=" m-auto">Chart Data Not Available at This Time</p>
+      </div>
+    )
+  } else {
+    return (
+      <div className="flex justify-center">
+        <ColorRing
+          visible={true}
+          height="100"
+          width="100"
+          ariaLabel="blocks-loading"
+          wrapperStyle={{}}
+          wrapperClass="blocks-wrapper"
+          colors={[
+            "hsl(358deg 48% 44% / 60%)",
+            "hsl(358deg 48% 44% / 60%)",
+            "hsl(202deg 60% 46% / 60%)",
+            "hsl(90deg 55% 44% / 100%)",
+            "hsl(90deg 55% 44% / 100%)",
+          ]}
+        />
+      </div>
+    )
+  }
+}
 
 export function Chart() {
-  const [chartData, setChartData] = useState<{
-    options: ChartOptions<"line">
-    data: ChartData<"line">
-  } | null>(null)
-
-  useEffect(() => {
-    const fetchRiverData = async () => {
-      const riverData = await riverAPIcall("09085000")
-      // setting the options and data for the line chart
-      setChartData({
-        options: {
-          responsive: true,
-          aspectRatio: 16 / 9,
-          interaction: {
-            mode: "index",
-            intersect: false,
-          },
-          plugins: {
-            title: {
-              display: true,
-              text: "Historic River Flow",
-              font: {
-                size: 16,
-              },
-              padding: {
-                top: 10,
-                bottom: 20,
-              },
-            },
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: function (context) {
-                  console.log(context.label)
-                  let label = context.dataset.label || ""
-                  if (label) {
-                    label += ": "
-                  }
-                  if (context.parsed.y !== null) {
-                    label += context.parsed.y + " " + "cfs"
-                  }
-                  return label
-                },
-                title: function (context) {
-                  return format(parseISO(context[0].label), "LLL d, yyyy, h:m a")
-                },
-              },
-            },
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: "Date",
-                font: {
-                  size: 14,
-                  weight: "500",
-                },
-              },
-              ticks: {
-                maxRotation: 0,
-                major: {
-                  enabled: true,
-                },
-                color: (c) => {
-                  if (c.tick.major) {
-                    return "hsl(196deg 46% 48%)"
-                  }
-                },
-                font: (c) => {
-                  if (c.tick.major) {
-                    return { size: 12, weight: "bold" }
-                  } else {
-                    return { size: 12 }
-                  }
-                },
-                // For a category axis, the val is the index so the lookup via getLabelForValue is needed
-                callback: function (value, index, values) {
-                  const tick = this.getLabelForValue(Number(value))
-                  const time = format(parseISO(tick), "HH.mm")
-                  if (time === "08.00" || time === "16.00" || time === "00.00") {
-                    if (time === "00.00") {
-                      values[index].major = true
-
-                      return format(parseISO(tick), "LLL d")
-                    } else {
-                      return format(parseISO(tick), "ha")
-                    }
-                  }
-                },
-              },
-            },
-            y: {
-              ticks: {
-                font: {
-                  size: 12,
-                },
-                color: "black",
-              },
-              title: {
-                display: true,
-                text: "Discharge Rate (CFS)",
-                font: {
-                  size: 14,
-                  weight: "500",
-                },
-              },
-            },
-          },
-        },
-        data: {
-          labels: riverData.map((item) => item.dateTime),
-          datasets: [
-            {
-              label: "Discharge Rate",
-              data: riverData.map((item) => item.value),
-              borderColor: "hsl(196deg 46% 48%)",
-              fill: true,
-              backgroundColor: "hsl(196deg 46% 48% / 30%)",
-              tension: 0.4,
-              pointRadius: 0,
-              segment: {
-                backgroundColor: (ctx) => up(ctx, "green") || down(ctx, "red"),
-              },
-            },
-          ],
-        },
-      })
-    }
-    fetchRiverData()
-  }, [])
-
   // need to add loader for loading state
-  return chartData ? (
-    <div className=" max-w-5xl m-auto py-10">
-      <Line options={chartData.options} data={chartData.data} />
-    </div>
-  ) : (
-    <></>
+  return (
+    <SectionWrapper>
+      <div className=" max-w-5xl m-auto px-5">
+        <LineChart />
+      </div>
+    </SectionWrapper>
   )
 }
 
