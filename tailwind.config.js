@@ -17,7 +17,7 @@ module.exports = {
         chartBadBorder: "hsl(358deg 48% 44% / 100%)",
         chartFair: "hsl(202deg 60% 46% / 60%)",
         chartFairBorder: "hsl(202deg 60% 46% / 100%)",
-        chartGood: "hsl(90deg 55% 44% / 40%)",
+        chartGood: "hsl(90deg 55% 44% / 60%)",
         chartGoodBorder: "hsl(90deg 55% 44% / 100%)",
       },
       fontFamily: {

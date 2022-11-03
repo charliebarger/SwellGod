@@ -2,7 +2,7 @@ import React from "react"
 import List from "components/ListGenerator"
 import Logo from "assets/images/logo-sm-1.png"
 
-const headerItems = ["About", "Fishing Report", "Contact"]
+const headerItems = ["Home", "Surf Reports", "Contact"]
 
 const Header = () => {
   return (

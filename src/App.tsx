@@ -5,6 +5,7 @@ import Report from "./pages/report/Report"
 import format from "date-fns/format"
 import Header from "./components/nav-bar/Header"
 import parseISO from "date-fns/esm/fp/parseISO/index.js"
+import Footer from "components/Footer"
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -35,6 +36,7 @@ function App() {
       <main>
         <Report />
       </main>
+      <Footer />
     </div>
   )
 }

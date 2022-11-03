@@ -3,6 +3,8 @@ import { SectionWrapper } from "components/SectionWrapper"
 import Annotation from "chartjs-plugin-annotation"
 import { ColorRing } from "react-loader-spinner"
 import useChart from "./useChart"
+import { colors } from "assets/helpers/colors"
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,6 +16,7 @@ import {
   Legend,
   Filler,
 } from "chart.js"
+import { color } from "d3"
 
 ChartJS.register(
   CategoryScale,
@@ -33,10 +36,10 @@ const LineChart = () => {
     return (
       <>
         <Line options={chartData.res.options} data={chartData.res.data} />
-        <div className="flex flex-wrap gap-4 ml-14">
+        <div className="flex flex-wrap gap-4 md:ml-14">
           <figure className="flex items-center gap-2 ">
             <div className=" bg-chartGood h-4 w-8 border-2 border-chartGoodBorder " />
-            <figcaption className=" font-medium text-sm">Good</figcaption>
+            <figcaption className=" font-medium text- text-sm">Good</figcaption>
           </figure>
           <figure className="flex items-center gap-2">
             <div className=" bg-chartFair h-4 w-8 border-2 border-chartFairBorder " />
@@ -66,11 +69,11 @@ const LineChart = () => {
           wrapperStyle={{}}
           wrapperClass="blocks-wrapper"
           colors={[
-            "hsl(358deg 48% 44% / 60%)",
-            "hsl(358deg 48% 44% / 60%)",
-            "hsl(202deg 60% 46% / 60%)",
-            "hsl(90deg 55% 44% / 100%)",
-            "hsl(90deg 55% 44% / 100%)",
+            colors.chartBad,
+            colors.chartBad,
+            colors.chartFair,
+            colors.chartGood,
+            colors.chartGood,
           ]}
         />
       </div>

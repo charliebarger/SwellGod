@@ -2,6 +2,7 @@ import format from "date-fns/format"
 import parseISO from "date-fns/esm/fp/parseISO/index.js"
 import { RiverAxis } from "api/riverData"
 import Annotation from "chartjs-plugin-annotation"
+import { colors } from "assets/helpers/colors"
 import { _DeepPartialObject } from "chart.js/types/utils"
 import {
   CartesianScaleTypeRegistry,
@@ -43,12 +44,12 @@ const down = (ctx: ScriptableLineSegmentContext, value: string) =>
 
 // specifies scales for object
 const scales = (
-  smallScreen = false,
+  smallScreen: boolean,
 ): _DeepPartialObject<{
   [key: string]: ScaleOptionsByType<keyof CartesianScaleTypeRegistry>
 }> => {
   const scaleValue = {
-    majorTickColor: smallScreen ? "black" : "hsl(196deg 46% 48%)",
+    majorTickColor: smallScreen ? "black" : colors.primaryColor,
     majorTickFontSize: smallScreen ? 10 : 12,
     majorTickFontWeight: smallScreen ? "medium" : "bold",
   }
@@ -70,7 +71,7 @@ const scales = (
         },
         color: (c) => {
           if (c.tick.major) {
-            return smallScreen ? "black" : "hsl(196deg 46% 48%)"
+            return smallScreen ? "black" : colors.primaryColor
           }
         },
         font: (c) => {
@@ -130,20 +131,16 @@ export const chartDataAndOptions: (riverData: RiverAxis[]) => {
         label: "Discharge Rate",
         data: riverData.map((item, i) => (i < 200 ? item.value + 225 : item.value + 125)),
         borderWidth: 2,
-        borderColor: "hsl(196deg 46% 48% / 60%)",
         fill: true,
-        backgroundColor: "hsl(196deg 46% 48% / 30%)",
         tension: 0,
         pointRadius: 0,
         segment: {
           backgroundColor: (ctx) =>
-            up(ctx, "hsl(90deg 55% 44% / 60%)") ||
-            med(ctx, "hsl(202deg 60% 46% / 60%)") ||
-            down(ctx, "hsl(358deg 48% 44% / 60%)"),
+            up(ctx, colors.chartGood) || med(ctx, colors.chartFair) || down(ctx, colors.chartBad),
           borderColor: (ctx) =>
-            up(ctx, "hsl(90deg 55% 44% / 100%)") ||
-            med(ctx, "hsl(202deg 60% 46% / 100%)") ||
-            down(ctx, "hsl(358deg 48% 44% / 100%)"),
+            up(ctx, colors.chartGoodBorder) ||
+            med(ctx, colors.chartFairBorder) ||
+            down(ctx, colors.chartBadBorder),
         },
       },
     ],
@@ -165,11 +162,11 @@ const options: ChartOptions<"line"> = {
           borderDash: [10],
           yMin: 250,
           yMax: 250,
-          borderColor: "hsl(90deg 55% 44% / 100%)",
+          borderColor: colors.chartGoodBorder,
           borderWidth: 2,
           label: {
             borderWidth: 2,
-            borderColor: "hsl(90deg 55% 44% / 100%)",
+            borderColor: colors.chartGoodBorder,
             content: "Good: 250",
             display: window.innerWidth > 768,
             position: "start",
@@ -182,11 +179,11 @@ const options: ChartOptions<"line"> = {
           borderDash: [10],
           yMin: 170,
           yMax: 170,
-          borderColor: "hsl(202deg 60% 46% / 100%)",
+          borderColor: colors.chartFair,
           borderWidth: 2,
           label: {
             borderWidth: 2,
-            borderColor: "hsl(202deg 60% 46% / 100%)",
+            borderColor: colors.chartFair,
             content: "Fair: 170",
             display: window.innerWidth > 768,
             position: "start",
@@ -228,10 +225,10 @@ const options: ChartOptions<"line"> = {
       },
     },
   },
-  scales: scales(),
+  scales: scales(window.innerWidth > 768 ? false : true),
   onResize(chart, size) {
-    const showLabel = size.width > 768 ? true : false
-    chart.options.scales = scales(true)
+    const showLabel = size.width > 768 ? false : true
+    chart.options.scales = scales(showLabel)
     chart.options.plugins = {
       annotation: {
         annotations: {
@@ -240,13 +237,13 @@ const options: ChartOptions<"line"> = {
             borderDash: [10],
             yMin: 250,
             yMax: 250,
-            borderColor: "hsl(90deg 55% 44% / 100%)",
+            borderColor: colors.chartGoodBorder,
             borderWidth: 2,
             label: {
               borderWidth: 2,
-              borderColor: "hsl(90deg 55% 44% / 100%)",
+              borderColor: colors.chartGoodBorder,
               content: "Good: 250",
-              display: showLabel,
+              display: !showLabel,
               position: "start",
               backgroundColor: "hsl(100deg 100% 100% / 100%)",
               color: "black ",
@@ -257,13 +254,13 @@ const options: ChartOptions<"line"> = {
             borderDash: [10],
             yMin: 170,
             yMax: 170,
-            borderColor: "hsl(202deg 60% 46% / 100%)",
+            borderColor: colors.chartFairBorder,
             borderWidth: 2,
             label: {
               borderWidth: 2,
-              borderColor: "hsl(202deg 60% 46% / 100%)",
+              borderColor: colors.chartFairBorder,
               content: "Fair: 170",
-              display: showLabel,
+              display: !showLabel,
               position: "start",
               backgroundColor: "hsl(100deg 100% 100% / 100%)",
               color: "black ",
