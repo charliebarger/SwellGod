@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { riverAPIcall, RiverAxis } from "api/riverData"
 import { chartDataAndOptions } from "./chartDataAndOptions"
 import { ChartOptions, ChartData } from "chart.js"
+
 interface fetchInterface {
   res:
     | {
@@ -13,7 +14,7 @@ interface fetchInterface {
   loading: boolean
 }
 
-const useChart = () => {
+const useChart = (locationID: string) => {
   const [chartData, setChartData] = useState<fetchInterface>({
     res: false,
     error: false,
@@ -22,15 +23,16 @@ const useChart = () => {
   useEffect(() => {
     const fetchRiverData = async () => {
       setChartData((prev) => ({ ...prev, loading: true }))
-      const riverData = await riverAPIcall("06711565")
+      const riverData = await riverAPIcall(locationID)
       if (riverData.error) {
         setChartData((prev) => ({ ...prev, loading: false, error: riverData.error }))
       } else {
-        if (riverData.data !== false) {
+        const { data } = riverData
+        if (typeof data === "object") {
           setChartData((prev) => ({
             ...prev,
             loading: false,
-            res: chartDataAndOptions(riverData.data as RiverAxis[]),
+            res: chartDataAndOptions(data, 170, 250),
           }))
         }
       }

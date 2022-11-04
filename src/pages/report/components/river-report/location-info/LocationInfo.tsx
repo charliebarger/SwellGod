@@ -10,9 +10,6 @@ const LocationInfo = () => {
           <div className=" text-left pb-3">
             <h4 className=" font-bold text-md">Iron Bridge Golf Club</h4>
             <address>430 Iron Bridge Rd, Glenwood Springs, CO 81601</address>
-            <a href="tel:+3215065492" className=" text-primaryColor">
-              321-506-5492
-            </a>
           </div>
           <div className=" w-full aspect-video lg:aspect-square m-auto ">
             <iframe
