@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { riverAPIcall, RiverAxis } from "api/riverData"
+import { riverAPIcall } from "api/riverData"
 import { chartDataAndOptions } from "./chartDataAndOptions"
 import { ChartOptions, ChartData } from "chart.js"
 
@@ -14,7 +14,7 @@ interface fetchInterface {
   loading: boolean
 }
 
-const useChart = (locationID: string) => {
+const useChart = (locationID: string, fair: number, good: number) => {
   const [chartData, setChartData] = useState<fetchInterface>({
     res: false,
     error: false,
@@ -32,7 +32,7 @@ const useChart = (locationID: string) => {
           setChartData((prev) => ({
             ...prev,
             loading: false,
-            res: chartDataAndOptions(data, 170, 250),
+            res: chartDataAndOptions(data, fair, good),
           }))
         }
       }

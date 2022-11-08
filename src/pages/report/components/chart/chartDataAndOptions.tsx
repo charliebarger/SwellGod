@@ -104,7 +104,10 @@ const scales = (
       },
     },
     y: {
-      max: goodConditions + 50 > highestValue ? goodConditions + 50 : highestValue + 50,
+      max:
+        Math.floor(
+          ((goodConditions + 50 > highestValue ? goodConditions : highestValue) * 1.2) / 10,
+        ) * 10,
       min: 0,
       ticks: {
         font: {
@@ -133,7 +136,7 @@ export const chartDataAndOptions: (
   options: ChartOptions<"line">
   data: ChartData<"line">
 } = (riverData, fairConditions, goodConditions) => {
-  const highestValue: number = riverData.reduce((acc, cur) => Math.max(acc, cur.value), 0) + 50
+  const highestValue: number = riverData.reduce((acc, cur) => Math.max(acc, cur.value), 0)
   return {
     options: {
       responsive: true,
@@ -197,7 +200,6 @@ export const chartDataAndOptions: (
         tooltip: {
           callbacks: {
             label: function (context) {
-              console.log(context.label)
               let label = context.dataset.label || ""
               if (label) {
                 label += ": "
@@ -271,7 +273,6 @@ export const chartDataAndOptions: (
           tooltip: {
             callbacks: {
               label: function (context) {
-                console.log(context.label)
                 let label = context.dataset.label || ""
                 if (label) {
                   label += ": "

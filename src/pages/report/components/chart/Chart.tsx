@@ -16,7 +16,6 @@ import {
   Legend,
   Filler,
 } from "chart.js"
-import { color } from "d3"
 
 ChartJS.register(
   CategoryScale,
@@ -30,8 +29,13 @@ ChartJS.register(
   Annotation,
 )
 
-export function Chart() {
-  const chartData = useChart("06711565")
+interface chartParams {
+  usgsID: string
+  flowRatings: { fairConditions: number; goodConditions: number }
+}
+
+export function Chart({ usgsID, flowRatings }: chartParams) {
+  const chartData = useChart(usgsID, flowRatings.fairConditions, flowRatings.goodConditions)
 
   const getChartState = () => {
     if (chartData.res !== false) {
