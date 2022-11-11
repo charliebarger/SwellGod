@@ -19,6 +19,7 @@ import {
   Tooltip,
   Legend,
   Filler,
+  PluginOptionsByType,
 } from "chart.js"
 
 ChartJS.register(
@@ -46,7 +47,81 @@ const med = (
 const down = (ctx: ScriptableLineSegmentContext, fairConditions: number, value: string) =>
   ctx.p0.parsed.y < fairConditions ? value : undefined
 
-// specifies scales for object
+const plugins = (
+  goodConditions: number,
+  fairConditions: number,
+  displayStatus: boolean,
+): _DeepPartialObject<PluginOptionsByType<"line">> => ({
+  annotation: {
+    annotations: {
+      line1: {
+        type: "line",
+        borderDash: [10],
+        yMin: goodConditions,
+        yMax: goodConditions,
+        borderColor: colors.chartGoodBorder,
+        borderWidth: 2,
+        label: {
+          borderWidth: 2,
+          borderColor: colors.chartGoodBorder,
+          content: `Good: ${goodConditions}`,
+          display: displayStatus,
+          position: "start",
+          backgroundColor: "hsl(100deg 100% 100% / 100%)",
+          color: "black ",
+        },
+      },
+      line2: {
+        type: "line",
+        borderDash: [10],
+        yMin: fairConditions,
+        yMax: fairConditions,
+        borderColor: colors.chartFair,
+        borderWidth: 2,
+        label: {
+          borderWidth: 2,
+          borderColor: colors.chartFair,
+          content: `Fair: ${fairConditions}`,
+          display: displayStatus,
+          position: "start",
+          backgroundColor: "hsl(100deg 100% 100% / 100%)",
+          color: "black ",
+        },
+      },
+    },
+  },
+  title: {
+    display: true,
+    text: "Historic River Flow",
+    color: "black",
+    font: {
+      size: 12,
+      weight: "bolder",
+    },
+    padding: {
+      bottom: 10,
+    },
+  },
+  legend: { display: false },
+  tooltip: {
+    callbacks: {
+      label: function (context) {
+        let label = context.dataset.label || ""
+        if (label) {
+          label += ": "
+        }
+        if (context.parsed.y !== null) {
+          label += context.parsed.y + " " + "cfs"
+        }
+        return label
+      },
+      title: function (context) {
+        return format(parseISO(context[0].label), "LLL d, yyyy, h:m a")
+      },
+    },
+  },
+})
+
 const scales = (
   smallScreen: boolean,
   highestValue: number,
@@ -137,6 +212,7 @@ export const chartDataAndOptions: (
   data: ChartData<"line">
 } = (riverData, fairConditions, goodConditions) => {
   const highestValue: number = riverData.reduce((acc, cur) => Math.max(acc, cur.value), 0)
+  const lessThanMedScreen = window.innerWidth > 768
   return {
     options: {
       responsive: true,
@@ -145,149 +221,12 @@ export const chartDataAndOptions: (
         mode: "index",
         intersect: false,
       },
-      plugins: {
-        annotation: {
-          annotations: {
-            line1: {
-              type: "line",
-              borderDash: [10],
-              yMin: goodConditions,
-              yMax: goodConditions,
-              borderColor: colors.chartGoodBorder,
-              borderWidth: 2,
-              label: {
-                borderWidth: 2,
-                borderColor: colors.chartGoodBorder,
-                content: `Good: ${goodConditions}`,
-                display: window.innerWidth > 768,
-                position: "start",
-                backgroundColor: "hsl(100deg 100% 100% / 100%)",
-                color: "black ",
-              },
-            },
-            line2: {
-              type: "line",
-              borderDash: [10],
-              yMin: fairConditions,
-              yMax: fairConditions,
-              borderColor: colors.chartFair,
-              borderWidth: 2,
-              label: {
-                borderWidth: 2,
-                borderColor: colors.chartFair,
-                content: `Fair: ${fairConditions}`,
-                display: window.innerWidth > 768,
-                position: "start",
-                backgroundColor: "hsl(100deg 100% 100% / 100%)",
-                color: "black ",
-              },
-            },
-          },
-        },
-        title: {
-          display: true,
-          text: "Historic River Flow",
-          color: "black",
-          font: {
-            size: 12,
-            weight: "bolder",
-          },
-          padding: {
-            bottom: 10,
-          },
-        },
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function (context) {
-              let label = context.dataset.label || ""
-              if (label) {
-                label += ": "
-              }
-              if (context.parsed.y !== null) {
-                label += context.parsed.y + " " + "cfs"
-              }
-              return label
-            },
-            title: function (context) {
-              return format(parseISO(context[0].label), "LLL d, yyyy, h:m a")
-            },
-          },
-        },
-      },
-      scales: scales(window.innerWidth > 768 ? false : true, highestValue, goodConditions),
-      onResize(chart, size) {
-        const showLabel = size.width > 768 ? false : true
+      plugins: plugins(goodConditions, fairConditions, lessThanMedScreen),
+      scales: scales(!lessThanMedScreen, highestValue, goodConditions),
+      onResize(chart) {
+        const showLabel = window.innerWidth < 768
         chart.options.scales = scales(showLabel, highestValue, goodConditions)
-        chart.options.plugins = {
-          annotation: {
-            annotations: {
-              line1: {
-                type: "line",
-                borderDash: [10],
-                yMin: goodConditions,
-                yMax: goodConditions,
-                borderColor: colors.chartGoodBorder,
-                borderWidth: 2,
-                label: {
-                  borderWidth: 2,
-                  borderColor: colors.chartGoodBorder,
-                  content: `Good: ${goodConditions}`,
-                  display: !showLabel,
-                  position: "start",
-                  backgroundColor: "hsl(100deg 100% 100% / 100%)",
-                  color: "black ",
-                },
-              },
-              line2: {
-                type: "line",
-                borderDash: [10],
-                yMin: fairConditions,
-                yMax: fairConditions,
-                borderColor: colors.chartFairBorder,
-                borderWidth: 2,
-                label: {
-                  borderWidth: 2,
-                  borderColor: colors.chartFairBorder,
-                  content: `Fair: ${fairConditions}`,
-                  display: !showLabel,
-                  position: "start",
-                  backgroundColor: "hsl(100deg 100% 100% / 100%)",
-                  color: "black ",
-                },
-              },
-            },
-          },
-          title: {
-            display: true,
-            text: "Historic River Flow",
-            font: {
-              size: 12,
-              weight: "bolder",
-            },
-            padding: {
-              bottom: 10,
-            },
-          },
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function (context) {
-                let label = context.dataset.label || ""
-                if (label) {
-                  label += ": "
-                }
-                if (context.parsed.y !== null) {
-                  label += context.parsed.y + " " + "cfs"
-                }
-                return label
-              },
-              title: function (context) {
-                return format(parseISO(context[0].label), "LLL d, yyyy, h:m a")
-              },
-            },
-          },
-        }
+        chart.options.plugins = plugins(goodConditions, fairConditions, !showLabel)
       },
     },
     data: {

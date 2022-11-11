@@ -42,10 +42,12 @@ export function Chart({ usgsID, flowRatings }: chartParams) {
       return (
         <>
           <Line options={chartData.res.options} data={chartData.res.data} />
-          <div className="flex flex-wrap gap-4 md:ml-14">
+          <div className="flex flex-wrap gap-4 ml-[50px] flex-col md:flex-row ">
             <figure className="flex items-center gap-2 ">
               <div className=" bg-chartGood h-4 w-8 border-2 border-chartGoodBorder " />
-              <figcaption className=" font-medium text- text-sm">Good</figcaption>
+              <figcaption className=" font-medium text- text-sm">
+                Good <span className="md:hidden">: 250 cfs</span>
+              </figcaption>
             </figure>
             <figure className="flex items-center gap-2">
               <div className=" bg-chartFair h-4 w-8 border-2 border-chartFairBorder " />
@@ -89,7 +91,7 @@ export function Chart({ usgsID, flowRatings }: chartParams) {
 
   return (
     <SectionWrapper>
-      <div className="max-w-5xl m-auto px-5">{getChartState()}</div>
+      <div className="max-w-5xl m-auto lg:px-5">{getChartState()}</div>
     </SectionWrapper>
   )
 }
