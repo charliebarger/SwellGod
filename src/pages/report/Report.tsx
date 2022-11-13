@@ -1,4 +1,5 @@
 import RiverReport from "./components/river-report/RiverReport"
+import { colors } from "assets/helpers/colors"
 import Chart from "./components/chart/Chart"
 import PageHeader from "components/headers/PageHeader"
 import Banner from "components/Banner"
@@ -12,10 +13,7 @@ const Report = () => {
     imgUrl: string
     environmentInfo: {
       usgsID: string
-      flowRatings: {
-        goodConditions: number
-        fairConditions: number
-      }
+      flowRatings: FlowRatings
       weatherValues: {
         instantFlow: number
         wind: number
@@ -38,7 +36,26 @@ const Report = () => {
       reportInfo: {
         report: string
         date: string
+        surfConditions: {
+          name: string
+          color: string
+        }
       }
+    }
+  }
+
+  interface FlowRatings {
+    fairConditions: Conditions
+    goodConditions: Conditions
+    badConditions: Conditions
+  }
+
+  interface Conditions {
+    caption: string
+    min: number
+    color: {
+      background: string
+      border: string
     }
   }
 
@@ -52,8 +69,30 @@ const Report = () => {
     environmentInfo: {
       usgsID: "06710247",
       flowRatings: {
-        goodConditions: 250,
-        fairConditions: 170,
+        goodConditions: {
+          min: 250,
+          caption: "Good",
+          color: {
+            background: "chartGood",
+            border: "chartGoodBorder",
+          },
+        },
+        fairConditions: {
+          min: 170,
+          caption: "Fair",
+          color: {
+            background: "chartFair",
+            border: "chartFairBorder",
+          },
+        },
+        badConditions: {
+          min: 0,
+          caption: "Bad",
+          color: {
+            background: "chartBad",
+            border: "chartBadBorder",
+          },
+        },
       },
       weatherValues: {
         instantFlow: 271,
@@ -79,6 +118,10 @@ const Report = () => {
         report:
           "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero, soluta. Officia, hic eius ducimus facilis, illum consequuntur exercitationem voluptates ipsa, accusantium nemo accusamus similique alias dolores possimus dolorum. Libero totam magnam praesentium similique rem repellat unde amet illo. Aliquam, quidem!",
         date: "01/24/1996",
+        surfConditions: {
+          name: "Good",
+          color: "chartFairBorder",
+        },
       },
     },
   }

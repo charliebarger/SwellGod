@@ -4,6 +4,7 @@ import { RiverAxis } from "api/riverData"
 import Annotation from "chartjs-plugin-annotation"
 import { colors } from "assets/helpers/colors"
 import { _DeepPartialObject } from "chart.js/types/utils"
+import { FlowRatings, Conditions } from "./Chart"
 import {
   CartesianScaleTypeRegistry,
   ScaleOptionsByType,
@@ -205,12 +206,11 @@ const scales = (
 // all of the data / options that chart JS needs
 export const chartDataAndOptions: (
   riverData: RiverAxis[],
-  fairConditions: number,
-  goodConditions: number,
+  conditions: FlowRatings,
 ) => {
   options: ChartOptions<"line">
   data: ChartData<"line">
-} = (riverData, fairConditions, goodConditions) => {
+} = (riverData, conditions) => {
   const highestValue: number = riverData.reduce((acc, cur) => Math.max(acc, cur.value), 0)
   const lessThanMedScreen = window.innerWidth > 768
   return {
@@ -221,12 +221,20 @@ export const chartDataAndOptions: (
         mode: "index",
         intersect: false,
       },
-      plugins: plugins(goodConditions, fairConditions, lessThanMedScreen),
-      scales: scales(!lessThanMedScreen, highestValue, goodConditions),
+      plugins: plugins(
+        conditions.goodConditions.min,
+        conditions.fairConditions.min,
+        lessThanMedScreen,
+      ),
+      scales: scales(!lessThanMedScreen, highestValue, conditions.goodConditions.min),
       onResize(chart) {
         const showLabel = window.innerWidth < 768
-        chart.options.scales = scales(showLabel, highestValue, goodConditions)
-        chart.options.plugins = plugins(goodConditions, fairConditions, !showLabel)
+        chart.options.scales = scales(showLabel, highestValue, conditions.goodConditions.min)
+        chart.options.plugins = plugins(
+          conditions.goodConditions.min,
+          conditions.fairConditions.min,
+          !showLabel,
+        )
       },
     },
     data: {
@@ -241,13 +249,23 @@ export const chartDataAndOptions: (
           pointRadius: 0,
           segment: {
             backgroundColor: (ctx) =>
-              up(ctx, goodConditions, colors.chartGood) ||
-              med(ctx, fairConditions, goodConditions, colors.chartFair) ||
-              down(ctx, fairConditions, colors.chartBad),
+              up(ctx, conditions.goodConditions.min, colors.chartGood) ||
+              med(
+                ctx,
+                conditions.fairConditions.min,
+                conditions.goodConditions.min,
+                colors.chartFair,
+              ) ||
+              down(ctx, conditions.fairConditions.min, colors.chartBad),
             borderColor: (ctx) =>
-              up(ctx, goodConditions, colors.chartGoodBorder) ||
-              med(ctx, fairConditions, goodConditions, colors.chartFairBorder) ||
-              down(ctx, fairConditions, colors.chartBadBorder),
+              up(ctx, conditions.goodConditions.min, colors.chartGoodBorder) ||
+              med(
+                ctx,
+                conditions.fairConditions.min,
+                conditions.goodConditions.min,
+                colors.chartFairBorder,
+              ) ||
+              down(ctx, conditions.fairConditions.min, colors.chartBadBorder),
           },
         },
       ],

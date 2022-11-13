@@ -4,6 +4,7 @@ import Annotation from "chartjs-plugin-annotation"
 import { ColorRing } from "react-loader-spinner"
 import useChart from "./useChart"
 import { colors } from "assets/helpers/colors"
+import LegendItem from "../legend/LegendItem"
 
 import {
   Chart as ChartJS,
@@ -31,11 +32,24 @@ ChartJS.register(
 
 interface chartParams {
   usgsID: string
-  flowRatings: { fairConditions: number; goodConditions: number }
+  flowRatings: FlowRatings
+}
+export interface FlowRatings {
+  fairConditions: Conditions
+  goodConditions: Conditions
+  badConditions: Conditions
 }
 
+export interface Conditions {
+  caption: string
+  min: number
+  color: {
+    background: string
+    border: string
+  }
+}
 export function Chart({ usgsID, flowRatings }: chartParams) {
-  const chartData = useChart(usgsID, flowRatings.fairConditions, flowRatings.goodConditions)
+  const chartData = useChart(usgsID, flowRatings)
 
   const getChartState = () => {
     if (chartData.res !== false) {
@@ -43,20 +57,13 @@ export function Chart({ usgsID, flowRatings }: chartParams) {
         <>
           <Line options={chartData.res.options} data={chartData.res.data} />
           <div className="flex flex-wrap gap-4 ml-[50px] flex-col md:flex-row ">
-            <figure className="flex items-center gap-2 ">
-              <div className=" bg-chartGood h-4 w-8 border-2 border-chartGoodBorder " />
-              <figcaption className=" font-medium text- text-sm">
-                Good <span className="md:hidden">: 250 cfs</span>
-              </figcaption>
-            </figure>
-            <figure className="flex items-center gap-2">
-              <div className=" bg-chartFair h-4 w-8 border-2 border-chartFairBorder " />
-              <figcaption className=" font-medium text-sm">Fair</figcaption>
-            </figure>
-            <figure className="flex items-center gap-2">
-              <div className=" bg-chartBad h-4 w-8 border-2 border-chartBadBorder " />
-              <figcaption className=" font-medium text-sm">Not Surfable</figcaption>
-            </figure>
+            {(Object.keys(flowRatings) as Array<keyof FlowRatings>).map((item, i) => (
+              <LegendItem
+                key={i}
+                boxColor={flowRatings[item].color}
+                caption={flowRatings[item].caption}
+              />
+            ))}
           </div>
         </>
       )
@@ -67,6 +74,7 @@ export function Chart({ usgsID, flowRatings }: chartParams) {
         </div>
       )
     } else {
+      // loading state
       return (
         <div className="flex justify-center">
           <ColorRing
