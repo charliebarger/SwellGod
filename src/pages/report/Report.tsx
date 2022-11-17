@@ -4,61 +4,10 @@ import Chart from "./components/chart/Chart"
 import PageHeader from "components/headers/PageHeader"
 import Banner from "components/Banner"
 import SurfReport from "./components/SurfReport"
+import { riverDataInterface, SurfConditionInfo, ReportWithConditions, Backgrounds, Borders } from "./report.types"
 import LocationInfo from "./components/river-report/location-info/LocationInfo"
+
 const Report = () => {
-  interface riverDataInterface {
-    riverName: string
-    surfSpot: string
-    riverDescription: string
-    imgUrl: string
-    environmentInfo: {
-      usgsID: string
-      flowRatings: FlowRatings
-      weatherValues: {
-        instantFlow: number
-        wind: number
-        temperature: number
-        lowTemp: number
-        highTemp: number
-      }
-    }
-    locationInfo: {
-      googleMapsID: string
-      parkingSpotName: string
-      address: string
-    }
-    surfReport: {
-      reporter: {
-        img: string
-        name: string
-        description: string
-      }
-      reportInfo: {
-        report: string
-        date: string
-        surfConditions: {
-          name: string
-          color: string
-        }
-      }
-    }
-  }
-
-  interface FlowRatings {
-    fairConditions: Conditions
-    goodConditions: Conditions
-    badConditions: Conditions
-  }
-
-  interface Conditions {
-    caption: string
-    min: number
-    color: {
-      background: string
-      border: string
-    }
-  }
-
   const riverData: riverDataInterface = {
     riverName: "South Platte River",
     surfSpot: "River Run Park",
@@ -69,30 +18,9 @@ const Report = () => {
     environmentInfo: {
       usgsID: "06710247",
       flowRatings: {
-        goodConditions: {
-          min: 250,
-          caption: "Good",
-          color: {
-            background: "chartGood",
-            border: "chartGoodBorder",
-          },
-        },
-        fairConditions: {
-          min: 170,
-          caption: "Fair",
-          color: {
-            background: "chartFair",
-            border: "chartFairBorder",
-          },
-        },
-        badConditions: {
-          min: 0,
-          caption: "Bad",
-          color: {
-            background: "chartBad",
-            border: "chartBadBorder",
-          },
-        },
+        goodConditions: 250,
+        fairConditions: 170,
+        badConditions: 0,
       },
       weatherValues: {
         instantFlow: 271,
@@ -118,12 +46,44 @@ const Report = () => {
         report:
           "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero, soluta. Officia, hic eius ducimus facilis, illum consequuntur exercitationem voluptates ipsa, accusantium nemo accusamus similique alias dolores possimus dolorum. Libero totam magnam praesentium similique rem repellat unde amet illo. Aliquam, quidem!",
         date: "01/24/1996",
-        surfConditions: {
-          name: "Good",
-          color: "chartFairBorder",
-        },
       },
     },
+  }
+
+  const flowRatings: SurfConditionInfo = {
+    goodConditions: {
+      min: riverData.environmentInfo.flowRatings.goodConditions,
+      caption: "Good",
+      color: {
+        background: "chartGood",
+        border: "chartGoodBorder",
+      },
+    },
+    badConditions: {
+      min: riverData.environmentInfo.flowRatings.goodConditions,
+      caption: "Not Surfable",
+      color: {
+        background: "chartBad",
+        border: "chartBadBorder",
+      },
+    },
+    fairConditions: {
+      min: riverData.environmentInfo.flowRatings.goodConditions,
+      caption: "Not Surfable",
+      color: {
+        background: "chartFairBorder",
+        border: "chartFair",
+      },
+    },
+  }
+
+
+  const report: ReportWithConditions = {
+    date: riverData.surfReport.reportInfo.date,
+    report: riverData.surfReport.reportInfo.report,
+    surfConditions: {
+      color: 
+    }
   }
 
   return (
@@ -139,10 +99,7 @@ const Report = () => {
         reporter={riverData.surfReport.reporter}
         report={riverData.surfReport.reportInfo}
       />
-      <Chart
-        usgsID={riverData.environmentInfo.usgsID}
-        flowRatings={riverData.environmentInfo.flowRatings}
-      />
+      <Chart usgsID={riverData.environmentInfo.usgsID} flowRatings={flowRatings} />
       <Banner title={riverData.surfSpot} body={riverData.riverDescription} />
       <LocationInfo locationData={riverData.locationInfo} />
     </>
