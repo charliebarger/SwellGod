@@ -1,3 +1,5 @@
+import { type } from "os"
+
 export interface riverDataInterface {
   riverName: string
   surfSpot: string
@@ -36,11 +38,13 @@ interface Report {
   date: string
 }
 
+export interface ConditionNames {
+  name: SurfConditionStatus
+  color: BackgroundBad | BackgroundFair | BackgroundGood
+}
+
 export interface ReportWithConditions extends Report {
-  surfConditions: {
-    name: SurfConditionStatus
-    color: BackgroundBad | BackgroundFair | BackgroundGood
-  }
+  surfConditions: ConditionNames
 }
 
 export interface SurfReport {
@@ -64,7 +68,7 @@ export interface SurfConditions<T, K> {
 }
 
 export interface SurfConditionInfo {
-  fairConditions: SurfConditions<BorderFair, BackgroundFair>
+  fairConditions: SurfConditions<BackgroundFair, BorderFair>
   goodConditions: SurfConditions<BackgroundGood, BorderGood>
   badConditions: SurfConditions<BackgroundBad, BorderBad>
 }

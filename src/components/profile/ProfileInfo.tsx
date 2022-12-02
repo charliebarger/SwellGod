@@ -1,6 +1,11 @@
 import React from "react"
 
-const ProfileInfo = ({ name, title }: { name: string; title: string }) => {
+interface ProfileInfoParams {
+  name: string
+  title: string
+}
+
+const ProfileInfo = ({ name, title }: ProfileInfoParams) => {
   return (
     <div className="flex flex-col">
       <span className=" text-left font-bold">{name}</span>

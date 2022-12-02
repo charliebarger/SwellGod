@@ -4,7 +4,12 @@ import Chart from "./components/chart/Chart"
 import PageHeader from "components/headers/PageHeader"
 import Banner from "components/Banner"
 import SurfReport from "./components/SurfReport"
-import { riverDataInterface, SurfConditionInfo, ReportWithConditions, Backgrounds, Borders } from "./report.types"
+import {
+  riverDataInterface,
+  SurfConditionInfo,
+  ReportWithConditions,
+  ConditionNames,
+} from "./report.types"
 import LocationInfo from "./components/river-report/location-info/LocationInfo"
 
 const Report = () => {
@@ -23,10 +28,10 @@ const Report = () => {
         badConditions: 0,
       },
       weatherValues: {
-        instantFlow: 271,
-        wind: 7,
-        temperature: 72,
-        lowTemp: 52,
+        instantFlow: 272,
+        wind: 8,
+        temperature: 73,
+        lowTemp: 53,
         highTemp: 72,
       },
     },
@@ -59,31 +64,40 @@ const Report = () => {
         border: "chartGoodBorder",
       },
     },
+    fairConditions: {
+      min: riverData.environmentInfo.flowRatings.fairConditions,
+      caption: "Fair",
+      color: {
+        background: "chartFair",
+        border: "chartFairBorder",
+      },
+    },
     badConditions: {
-      min: riverData.environmentInfo.flowRatings.goodConditions,
+      min: riverData.environmentInfo.flowRatings.badConditions,
       caption: "Not Surfable",
       color: {
         background: "chartBad",
         border: "chartBadBorder",
       },
     },
-    fairConditions: {
-      min: riverData.environmentInfo.flowRatings.goodConditions,
-      caption: "Not Surfable",
-      color: {
-        background: "chartFairBorder",
-        border: "chartFair",
-      },
-    },
   }
 
+  const getConditions = (): ConditionNames => {
+    const { instantFlow } = riverData.environmentInfo.weatherValues
+    const { goodConditions, badConditions, fairConditions } = riverData.environmentInfo.flowRatings
+    if (instantFlow > goodConditions) {
+      return { color: "chartGood", name: "Good" }
+    } else if (instantFlow < goodConditions && instantFlow > fairConditions) {
+      return { color: "chartFair", name: "Fair" }
+    } else {
+      return { color: "chartBad", name: "Not Surfable" }
+    }
+  }
 
   const report: ReportWithConditions = {
     date: riverData.surfReport.reportInfo.date,
     report: riverData.surfReport.reportInfo.report,
-    surfConditions: {
-      color: 
-    }
+    surfConditions: getConditions(),
   }
 
   return (
@@ -95,10 +109,7 @@ const Report = () => {
         riverName={riverData.riverName}
         squareData={riverData.environmentInfo.weatherValues}
       />
-      <SurfReport
-        reporter={riverData.surfReport.reporter}
-        report={riverData.surfReport.reportInfo}
-      />
+      <SurfReport reporter={riverData.surfReport.reporter} report={report} />
       <Chart usgsID={riverData.environmentInfo.usgsID} flowRatings={flowRatings} />
       <Banner title={riverData.surfSpot} body={riverData.riverDescription} />
       <LocationInfo locationData={riverData.locationInfo} />

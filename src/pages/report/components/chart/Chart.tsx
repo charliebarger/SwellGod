@@ -3,6 +3,7 @@ import { SectionWrapper } from "components/SectionWrapper"
 import Annotation from "chartjs-plugin-annotation"
 import { ColorRing } from "react-loader-spinner"
 import useChart from "./useChart"
+import { Backgrounds, Borders } from "pages/report/report.types"
 import { colors } from "assets/helpers/colors"
 import LegendItem from "../legend/LegendItem"
 
@@ -44,13 +45,12 @@ export interface Conditions {
   caption: string
   min: number
   color: {
-    background: string
-    border: string
+    background: Backgrounds
+    border: Borders
   }
 }
 export function Chart({ usgsID, flowRatings }: chartParams) {
   const chartData = useChart(usgsID, flowRatings)
-
   const getChartState = () => {
     if (chartData.res !== false) {
       return (
